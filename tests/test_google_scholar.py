@@ -3,6 +3,7 @@ import os
 import requests
 from paper_search_mcp.academic_platforms.google_scholar import GoogleScholarSearcher
 
+
 def check_scholar_accessible():
     """检查 Google Scholar 是否可访问"""
     try:
@@ -11,12 +12,15 @@ def check_scholar_accessible():
     except:
         return False
 
+
 class TestGoogleScholarSearcher(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.scholar_accessible = check_scholar_accessible()
         if not cls.scholar_accessible:
-            print("\nWarning: Google Scholar is not accessible, some tests will be skipped")
+            print(
+                "\nWarning: Google Scholar is not accessible, some tests will be skipped"
+            )
 
     def setUp(self):
         self.searcher = GoogleScholarSearcher()
@@ -24,7 +28,7 @@ class TestGoogleScholarSearcher(unittest.TestCase):
     def test_search(self):
         if not self.scholar_accessible:
             self.skipTest("Google Scholar is not accessible")
-            
+
         papers = self.searcher.search("machine learning", max_results=5)
         print(f"\nFound {len(papers)} papers for query 'machine learning':")
         for i, paper in enumerate(papers, 1):
@@ -42,5 +46,6 @@ class TestGoogleScholarSearcher(unittest.TestCase):
         message = self.searcher.read_paper("some_id")
         self.assertIn("Google Scholar doesn't support direct paper reading", message)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

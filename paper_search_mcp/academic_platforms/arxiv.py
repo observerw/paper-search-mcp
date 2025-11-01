@@ -7,8 +7,10 @@ from ..paper import Paper
 from PyPDF2 import PdfReader
 import os
 
+
 class PaperSource:
     """Abstract base class for paper sources"""
+
     def search(self, query: str, **kwargs) -> List[Paper]:
         raise NotImplementedError
 
@@ -18,16 +20,18 @@ class PaperSource:
     def read_paper(self, paper_id: str, save_path: str) -> str:
         raise NotImplementedError
 
+
 class ArxivSearcher(PaperSource):
     """Searcher for arXiv papers"""
+
     BASE_URL = "http://export.arxiv.org/api/query"
 
     def search(self, query: str, max_results: int = 10) -> List[Paper]:
         params = {
-            'search_query': query,
-            'max_results': max_results,
-            'sortBy': 'submittedDate',
-            'sortOrder': 'descending'
+            "search_query": query,
+            "max_results": max_results,
+            "sortBy": "submittedDate",
+            "sortOrder": "descending",
         }
         response = requests.get(self.BASE_URL, params=params)
         feed = feedparser.parse(response.content)
@@ -35,23 +39,32 @@ class ArxivSearcher(PaperSource):
         for entry in feed.entries:
             try:
                 authors = [author.name for author in entry.authors]
-                published = datetime.strptime(entry.published, '%Y-%m-%dT%H:%M:%SZ')
-                updated = datetime.strptime(entry.updated, '%Y-%m-%dT%H:%M:%SZ')
-                pdf_url = next((link.href for link in entry.links if link.type == 'application/pdf'), '')
-                papers.append(Paper(
-                    paper_id=entry.id.split('/')[-1],
-                    title=entry.title,
-                    authors=authors,
-                    abstract=entry.summary,
-                    url=entry.id,
-                    pdf_url=pdf_url,
-                    published_date=published,
-                    updated_date=updated,
-                    source='arxiv',
-                    categories=[tag.term for tag in entry.tags],
-                    keywords=[],
-                    doi=entry.get('doi', '')
-                ))
+                published = datetime.strptime(entry.published, "%Y-%m-%dT%H:%M:%SZ")
+                updated = datetime.strptime(entry.updated, "%Y-%m-%dT%H:%M:%SZ")
+                pdf_url = next(
+                    (
+                        link.href
+                        for link in entry.links
+                        if link.type == "application/pdf"
+                    ),
+                    "",
+                )
+                papers.append(
+                    Paper(
+                        paper_id=entry.id.split("/")[-1],
+                        title=entry.title,
+                        authors=authors,
+                        abstract=entry.summary,
+                        url=entry.id,
+                        pdf_url=pdf_url,
+                        published_date=published,
+                        updated_date=updated,
+                        source="arxiv",
+                        categories=[tag.term for tag in entry.tags],
+                        keywords=[],
+                        doi=entry.get("doi", ""),
+                    )
+                )
             except Exception as e:
                 print(f"Error parsing arXiv entry: {e}")
         return papers
@@ -60,17 +73,17 @@ class ArxivSearcher(PaperSource):
         pdf_url = f"https://arxiv.org/pdf/{paper_id}.pdf"
         response = requests.get(pdf_url)
         output_file = f"{save_path}/{paper_id}.pdf"
-        with open(output_file, 'wb') as f:
+        with open(output_file, "wb") as f:
             f.write(response.content)
         return output_file
 
     def read_paper(self, paper_id: str, save_path: str = "./downloads") -> str:
         """Read a paper and convert it to text format.
-        
+
         Args:
             paper_id: arXiv paper ID
             save_path: Directory where the PDF is/will be saved
-            
+
         Returns:
             str: The extracted text content of the paper
         """
@@ -78,25 +91,26 @@ class ArxivSearcher(PaperSource):
         pdf_path = f"{save_path}/{paper_id}.pdf"
         if not os.path.exists(pdf_path):
             pdf_path = self.download_pdf(paper_id, save_path)
-        
+
         # Read the PDF
         try:
             reader = PdfReader(pdf_path)
             text = ""
-            
+
             # Extract text from each page
             for page in reader.pages:
                 text += page.extract_text() + "\n"
-            
+
             return text.strip()
         except Exception as e:
             print(f"Error reading PDF for paper {paper_id}: {e}")
             return ""
 
+
 if __name__ == "__main__":
     # 测试 ArxivSearcher 的功能
     searcher = ArxivSearcher()
-    
+
     # 测试搜索功能
     print("Testing search functionality...")
     query = "machine learning"
@@ -108,7 +122,7 @@ if __name__ == "__main__":
             print(f"{i}. {paper.title} (ID: {paper.paper_id})")
     except Exception as e:
         print(f"Error during search: {e}")
-    
+
     # 测试 PDF 下载功能
     if papers:
         print("\nTesting PDF download functionality...")

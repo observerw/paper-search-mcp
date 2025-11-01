@@ -2,6 +2,7 @@
 import unittest
 from paper_search_mcp.academic_platforms.arxiv import ArxivSearcher
 
+
 class TestArxivSearcher(unittest.TestCase):
     def test_search(self):
         searcher = ArxivSearcher()
@@ -12,5 +13,6 @@ class TestArxivSearcher(unittest.TestCase):
         self.assertEqual(len(papers), 10)
         self.assertTrue(papers[0].title)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

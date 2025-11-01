@@ -7,7 +7,10 @@ from paper_search_mcp.academic_platforms.semantic import SemanticSearcher
 def check_semantic_accessible():
     """Check if Semantic Scholar is accessible"""
     try:
-        response = requests.get("https://api.semanticscholar.org/graph/v1/paper/5bbfdf2e62f0508c65ba6de9c72fe2066fd98138", timeout=5)
+        response = requests.get(
+            "https://api.semanticscholar.org/graph/v1/paper/5bbfdf2e62f0508c65ba6de9c72fe2066fd98138",
+            timeout=5,
+        )
         return response.status_code == 200
     except:
         return False
@@ -259,16 +262,12 @@ class TestSemanticSearcher(unittest.TestCase):
         # Test detailed search time
         print("\nTesting detailed search performance...")
         start_time = time.time()
-        compact_papers = self.searcher.search(
-            query, max_results=max_results
-        )
+        compact_papers = self.searcher.search(query, max_results=max_results)
         compact_time = time.time() - start_time
 
         print(
             f"Compact search took {compact_time:.2f} seconds for {len(compact_papers)} papers"
         )
-
-
 
 
 if __name__ == "__main__":

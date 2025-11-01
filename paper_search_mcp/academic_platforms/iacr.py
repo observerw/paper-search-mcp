@@ -192,7 +192,9 @@ class IACRSearcher(PaperSource):
                 if len(papers) >= max_results:
                     break
 
-                logger.info(f"Processing paper {i+1}/{min(len(results), max_results)}")
+                logger.info(
+                    f"Processing paper {i + 1}/{min(len(results), max_results)}"
+                )
                 paper = self._parse_paper(item, fetch_details=fetch_details)
                 if paper:
                     papers.append(paper)

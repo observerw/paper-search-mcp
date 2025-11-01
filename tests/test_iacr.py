@@ -282,7 +282,7 @@ class TestIACRSearcher(unittest.TestCase):
 
         # Detailed search should take longer (but this might not always be true due to network variability)
         print(
-            f"Performance ratio (detailed/compact): {detailed_time/compact_time:.2f}x"
+            f"Performance ratio (detailed/compact): {detailed_time / compact_time:.2f}x"
         )
 
         # Both should return the same number of papers
